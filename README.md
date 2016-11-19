@@ -1,1 +1,1 @@
-"# D1_Multiplier" 
+# D1_Multiplier
