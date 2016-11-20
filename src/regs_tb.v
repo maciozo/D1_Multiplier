@@ -16,12 +16,11 @@ module regs_tb;
     initial
     begin
         clk <= 0;
-        #10 forever clk <= ~clk;
+        forever #10 clk <= ~clk;
     end
     
     initial
     begin
-        $display("t");
         n_reset = 0;
         ADD = 0;
         SHIFT = 0;
@@ -30,7 +29,6 @@ module regs_tb;
         carry = 0;
         
         #10;
-        $display("t");
         if (register != 9'b0)
         begin
             $display("Register isn't empty");
@@ -42,11 +40,9 @@ module regs_tb;
         n_reset = 0;
         
         #10;
-        $display("t");
         n_reset = 1;
         
         #10;
-        $display("t");
         if (register != {5'b0, 4'd9})
         begin
             $display("Multiplier not loaded to register");
@@ -56,7 +52,6 @@ module regs_tb;
         ADD = 1;
         
         #10;
-        $display("t");
         if (register != 9'b110001001)
         begin
             $display("Result from adder not loaded to register");
@@ -66,36 +61,34 @@ module regs_tb;
         SHIFT = 1;
         
         #10;
-        $display("t");
         if (register != 9'b011000100)
         begin
             $display("Register not shifted");
+            $display("register = %b", register);
             $fatal;
         end
         SHIFT = 0;
         
         #10;
-        $display("t");
         if (register != 9'b011000100)
         begin
-            $display("Error in hold state. Register not held");
+            $display("Register not held");
+            $display("register = %b", register);
             $fatal;
         end
         
         #10;
-        $display("t");
         n_reset = 0;
         
         #10;
-        $display("t");
         if (register != {5'b0, 4'd9})
         begin
-            $display("Error in clear state. Register not reset");
+            $display("Register not reset");
+            $display("register = %b", register);
             $fatal;
         end
         
         #10;
-        $display("t");
         $display("Test passed!");
         $finish;
         

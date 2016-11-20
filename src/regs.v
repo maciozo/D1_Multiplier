@@ -12,25 +12,21 @@ module regs(input logic clk,
     
         if (!n_reset)
         begin
-            $display("reset");
             register <= {5'b0, multiplier};
         end
             
         else if (ADD & !SHIFT)
         begin
-            $display("add");
             register[8:4] <= {carry, sum};
         end
             
         else if (SHIFT & !ADD)
         begin
-            $display("shift");
             register <= {1'b0, register[8:1]};
         end
         
         else
         begin
-            $display("noop");
             register <= register;
         end
             
