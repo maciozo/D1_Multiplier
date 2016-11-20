@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 module regs(input logic clk, 
             input logic n_reset,
             input logic ADD,
@@ -13,7 +14,7 @@ module regs(input logic clk,
     
         if (!n_reset)
         begin
-            register <= 9'b0;
+            register <= 0;
         end
         
         else if (RESET)

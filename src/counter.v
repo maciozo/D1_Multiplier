@@ -1,8 +1,15 @@
+`timescale 1ns/1ps
 module counter( input logic clk,
                 input logic n_reset,
                 input logic DECREMENT,
                 input logic RESET,
                 output logic[2:0] count);
+                
+    initial
+    begin
+        $dumpfile("multiplier_tb.vcd");
+        $dumpvars(0, count);
+    end
                 
     always @(posedge clk, negedge n_reset)
     begin

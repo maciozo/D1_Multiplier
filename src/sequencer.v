@@ -19,7 +19,7 @@ module sequencer(   input logic clk,
     
     initial
     begin
-        $dumpfile("sequencer_tb.vcd");
+        $dumpfile("multiplier_tb.vcd");
         $dumpvars(0, stCurrent, stNext);
     end
     
