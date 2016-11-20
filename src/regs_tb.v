@@ -16,7 +16,7 @@ module regs_tb;
     initial
     begin
         $dumpfile("regs_tb.vcd");
-        $dumpvars(0,clk, n_reset, ADD, SHIFT, sum, multiplier, carry, register);
+        $dumpvars(0, clk, n_reset, ADD, SHIFT, sum, multiplier, carry, register);
     end
     
     initial
