@@ -6,7 +6,6 @@ module adder_tb;
     logic[3:0] m;
     logic[3:0] sum;
     logic carry;
-    logic clk;
     
     logic[8:0] correct_sum;
     logic correct_carry;
@@ -22,7 +21,13 @@ module adder_tb;
         m = 0;
     end
     
-    always //@(posedge clk)
+    initial
+    begin
+        $dumpfile("adder_tb.vcd");
+        $dumpvars(0, a, m, sum, carry);
+    end
+    
+    always
     begin
     
         for (loopa = 0; loopa <= 15; loopa++)

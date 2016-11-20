@@ -15,6 +15,12 @@ module regs_tb;
     
     initial
     begin
+        $dumpfile("regs_tb.vcd");
+        $dumpvars(0,clk, n_reset, ADD, SHIFT, sum, multiplier, carry, register);
+    end
+    
+    initial
+    begin
         clk <= 0;
         forever #5 clk <= ~clk;
     end
