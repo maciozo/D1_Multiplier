@@ -11,6 +11,10 @@ module regs_tb;
     logic carry;
     logic[8:0] register;
     
+    int sumloop;
+    int multiplierloop;
+    int carryloop;
+    
     regs r(.*);
     
     initial
@@ -27,6 +31,7 @@ module regs_tb;
     
     initial
     begin
+        
         n_reset = 0;
         ADD = 0;
         SHIFT = 0;

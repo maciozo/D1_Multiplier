@@ -2,6 +2,7 @@ module regs(input logic clk,
             input logic n_reset,
             input logic ADD,
             input logic SHIFT,
+            input logic RESET,
             input logic[3:0] sum,
             input logic[3:0] multiplier,
             input logic carry,
@@ -11,6 +12,11 @@ module regs(input logic clk,
     begin
     
         if (!n_reset)
+        begin
+            register <= 9'b0;
+        end
+        
+        else if (RESET)
         begin
             register <= {5'b0, multiplier};
         end
