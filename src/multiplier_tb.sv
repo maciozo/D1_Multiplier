@@ -5,7 +5,7 @@ module multiplier_tb;
     logic START;
     logic READY;
     logic n_reset;
-    logic[7:0] AQ;
+    logic[15:0] AQ;
     
     multiplier m(.*);
     

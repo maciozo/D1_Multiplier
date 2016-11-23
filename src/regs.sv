@@ -4,10 +4,10 @@ module regs(input logic clk,
             input logic ADD,
             input logic SHIFT,
             input logic RESET,
-            input logic[3:0] sum,
-            input logic[3:0] multiplier,
+            input logic[7:0] sum,
+            input logic[7:0] multiplier,
             input logic carry,
-            output logic[8:0] register);
+            output logic[16:0] register);
 
     always @(posedge clk, negedge n_reset)
     begin
@@ -19,17 +19,22 @@ module regs(input logic clk,
         
         else if (RESET)
         begin
-            register <= {5'b0, multiplier};
+            register <= {9'b0, multiplier};
         end
             
         else if (ADD & !SHIFT)
         begin
-            register[8:4] <= {carry, sum};
+            register[16:8] <= {carry, sum};
         end
             
         else if (SHIFT & !ADD)
         begin
-            register <= {1'b0, register[8:1]};
+            register <= {1'b0, register[16:1]};
+        end
+		
+		else if (SHIFT & ADD)
+        begin
+            register <= {1'b0, carry, sum, register[7:1]};
         end
         
         else

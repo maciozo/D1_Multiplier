@@ -1,10 +1,10 @@
 `timescale 1ns/1ps
 
 module sequencer(   input logic clk,
-                    input logic[8:0] register,
+                    input logic[16:0] register,
                     input logic n_reset,
                     input logic START,
-                    input logic[2:0] count,
+                    input logic[3:0] count,
                     output logic ADD,
                     output logic SHIFT,
                     output logic RESET,
@@ -35,7 +35,7 @@ module sequencer(   input logic clk,
         end
     end
     
-    always
+    always @(*)
     begin
         #1ps;
         case (stCurrent)
@@ -45,7 +45,7 @@ module sequencer(   input logic clk,
                 ADD = 0;
                 DECREMENT = 0;
                 READY = 0;
-                if (!START) begin
+                if (START) begin
                     stNext = stIdle;
                 end
                 else begin
@@ -55,31 +55,44 @@ module sequencer(   input logic clk,
             
             stAdd: begin
                 RESET = 0;
-                SHIFT = 0;
+                SHIFT = 1;
                 DECREMENT = 1;
                 READY = 0;
-                if (register[0]) begin
-                    ADD = 1;
-                end
-                else begin
-                    ADD = 0;
-                end
-                stNext = stShift;
+				if (register[0]) begin
+					ADD = 1;
+				end
+				else begin
+					ADD = 0;
+				end
+				if (count > 0) begin
+					stNext = stAdd;
+				end
+				else begin
+					stNext = stStop;
+				end
             end
                 
-            stShift: begin
-                RESET = 0;
-                SHIFT = 1;
-                DECREMENT = 0;
-                ADD = 0;
-                READY = 0;
-                if (count > 0) begin
-                    stNext = stAdd;
-                end
-                else begin
-                    stNext = stStop;
-                end
-            end
+            // stShift: begin
+                // RESET = 0;
+                // SHIFT = 1;
+                // DECREMENT = 0;
+                // ADD = 0;
+                // READY = 0;
+                // if (register[0]) begin
+                    // if (count > 0) begin
+						// ADD = 1;
+						// stNext = stAdd;
+					// end
+					// else begin
+						// ADD = 0;
+						// stNext = stStop;
+					// end
+                // end
+                // else begin
+					// ADD = 0;
+                    // stNext = stAdd;
+                // end
+            // end
                 
             stStop: begin
                 RESET = 0;
@@ -87,7 +100,7 @@ module sequencer(   input logic clk,
                 DECREMENT = 0;
                 ADD = 0;
                 READY = 1;
-                if (START) begin
+                if (!START) begin
                     stNext = stIdle;
                 end
                 else begin

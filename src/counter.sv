@@ -3,7 +3,7 @@ module counter( input logic clk,
                 input logic n_reset,
                 input logic DECREMENT,
                 input logic RESET,
-                output logic[2:0] count);
+                output logic[3:0] count);
                 
     initial
     begin
@@ -19,7 +19,7 @@ module counter( input logic clk,
         end
         else if (RESET & !DECREMENT)
         begin
-            count <= 4;
+            count <= 7;
         end
         else if (DECREMENT & !RESET)
         begin
