@@ -1,2 +1,7 @@
 *.exe
 *.vcd
+*.aux
+report/d1-report.log
+*.pdf
+*.gz
+*.ps

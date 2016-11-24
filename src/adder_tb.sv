@@ -1,19 +1,16 @@
 `timescale 1ns/1ps
-
 module adder_tb;
-
-    logic[3:0] a;
-    logic[3:0] m;
-    logic[3:0] sum;
+    logic[7:0] a;
+    logic[7:0] m;
+    logic[7:0] sum;
     logic carry;
-    
-    logic[8:0] correct_sum;
+    logic[16:0] correct_sum;
     logic correct_carry;
-    
     int loopa;
     int loopm;
     
-    adder r(.*);
+    // Instantiating adder module
+    adder r(.*); 
     
     initial
     begin
@@ -21,36 +18,34 @@ module adder_tb;
         m = 0;
     end
     
+    // For generating waveforms
     initial
     begin
         $dumpfile("adder_tb.vcd");
         $dumpvars(0, a, m, sum, carry);
     end
     
-    always
-    begin
-    
-        for (loopa = 0; loopa <= 15; loopa++)
-        begin
-            for (loopm = 0; loopm <= 15; loopm++)
-            begin
-            
+    // Loop that tests every single possible set of inputs.
+    always begin
+        #1;
+        for (loopa = 0; loopa <= 255; loopa++) begin
+            for (loopm = 0; loopm <= 255; loopm++) begin
                 correct_sum = loopa + loopm;
-                if (correct_sum > 15)
+                if (correct_sum > 255)
                     correct_carry = 1;
                 else
-                    correct_carry = 0;
-                    
+                    correct_carry = 0;                    
                 $display("%d + %d = %d carry %d", a, m, sum, carry);
-                if ((sum != correct_sum[3:0]) || (carry != correct_carry))
+                // Checking to make sure that the adder module is generating the correct values.
+                // 8 bit output, hence the sum is being checked against the lower 8 bits of correct_sum
+                if ((sum != correct_sum[7:0]) || (carry != correct_carry))
                     $fatal;
                 m++;
-                #1;
+                #1; // Delays required by Icarus Verilog for some reason
             end
             a++;
             #1;
-        end
-        
+        end        
         $display("Test passed!");
         $finish;
     end

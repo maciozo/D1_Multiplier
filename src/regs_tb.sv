@@ -6,10 +6,11 @@ module regs_tb;
     logic n_reset;
     logic ADD;
     logic SHIFT;
-    logic[3:0] sum;
-    logic[3:0] multiplier;
+    logic[7:0] sum;
+    logic[7:0] multiplier;
     logic carry;
-    logic[8:0] register;
+    logic[16:0] register;
+    logic RESET;
     
     int sumloop;
     int multiplierloop;
@@ -20,7 +21,7 @@ module regs_tb;
     initial
     begin
         $dumpfile("regs_tb.vcd");
-        $dumpvars(0, clk, n_reset, ADD, SHIFT, sum, multiplier, carry, register);
+        $dumpvars(0, clk, n_reset, ADD, SHIFT, sum, multiplier, carry, register, RESET);
     end
     
     initial
@@ -38,6 +39,7 @@ module regs_tb;
         sum = 0;
         multiplier = 0;
         carry = 0;
+        RESET = 0;
         
         #10;
         if (register != 9'b0)
@@ -45,25 +47,29 @@ module regs_tb;
             $display("Register isn't empty");
             $fatal;
         end
-        sum = 8;
-        multiplier = 9;
+        
+        // Some arbitrary values
+        sum = 152;
+        multiplier = 73;
         carry = 1;
         n_reset = 0;
         
         #10;
         n_reset = 1;
+        RESET = 1;
         
         #10;
-        if (register != {5'b0, 4'd9})
+        if (register != 17'b00000000001001001)
         begin
             $display("Multiplier not loaded to register");
             $display("multiplier = %b, register = %b", multiplier, register);
             $fatal;
         end
+        RESET = 0;
         ADD = 1;
         
         #10;
-        if (register != 9'b110001001)
+        if (register != 17'b11001100001001001)
         begin
             $display("Result from adder not loaded to register");
             $fatal;
@@ -72,7 +78,7 @@ module regs_tb;
         SHIFT = 1;
         
         #10;
-        if (register != 9'b011000100)
+        if (register != 17'b01100110000100100)
         begin
             $display("Register not shifted");
             $display("register = %b", register);
@@ -81,18 +87,30 @@ module regs_tb;
         SHIFT = 0;
         
         #10;
-        if (register != 9'b011000100)
+        if (register != 17'b01100110000100100)
         begin
             $display("Register not held");
             $display("register = %b", register);
             $fatal;
         end
+        ADD = 1;
+        SHIFT = 1;
         
         #10;
-        n_reset = 0;
+        if (register != 17'b01100110000010010)
+        begin
+            $display("Register not shiftadded");
+            $display("register = %b", register);
+            $fatal;
+        end
+        SHIFT = 0;
+        ADD = 0;
         
         #10;
-        if (register != {5'b0, 4'd9})
+        RESET = 1;
+        
+        #10;
+        if (register != 17'b00000000001001001)
         begin
             $display("Register not reset");
             $display("register = %b", register);
