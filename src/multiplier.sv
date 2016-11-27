@@ -30,6 +30,7 @@ module multiplier(  input logic START,
         forever #1 clk = ~clk;
     end
     
+    // For conformance with specification
     assign AQ = register[15:0];
     
     //// Internal Oscillator 3.33MHz. Comment out if simulating!
@@ -49,6 +50,5 @@ module multiplier(  input logic START,
     regs r(.*);
     counter c(.*);
     sequencer s(.*);
-    
     
 endmodule

@@ -13,13 +13,11 @@ module sequencer(   input logic clk,
                     
     typedef enum logic[2:0] {stIdle, stAdd, stShift, stStop} state;
     
-    // counter r(.*);
-    
     state stCurrent, stNext;
     
     initial
     begin
-        $dumpfile("multiplier_tb.vcd");
+        $dumpfile("sequencer_tb.vcd");
         $dumpvars(0, stCurrent, stNext);
     end
     

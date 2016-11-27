@@ -5,3 +5,5 @@ report/d1-report.log
 *.pdf
 *.gz
 *.ps
+report/d1-report.bbl
+*.old

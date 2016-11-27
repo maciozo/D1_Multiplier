@@ -18,7 +18,7 @@ module multiplier_tb;
     initial
     begin
         n_reset = 1;
-        START = 0;
+        START = 1;
         
         #500ps
         n_reset = 0;
@@ -29,16 +29,16 @@ module multiplier_tb;
         n_reset = 1;
         
         #1;
-        START = 1;
+        START = 0;
 
         #2;
-        START = 0;
+        START = 1;
         
         #29
-        START = 1;
+        START = 0;
 
         #6;
-        START = 0;
+        START = 1;
         
         #30;
         n_reset = 0;
