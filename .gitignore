@@ -7,3 +7,4 @@ report/d1-report.log
 *.ps
 report/d1-report.bbl
 *.old
+*.zip
