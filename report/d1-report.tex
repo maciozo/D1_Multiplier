@@ -58,7 +58,7 @@ Lab completed on 2016-11-21
 \end{center}
 
 \begin{abstract}
-Using SystemVerilog, the individual elements of a 4 bit (and eventually an 8-bit) hardware multiplier were written for synthesis on to a MachXO2 Pico FPGA. The modules included a 4 bit adder, 9 bit register, and a sequencer that implemented the shift and add multiplication algorithm. The code was mostly tested using Icarus Verilog, and then additional changes in the lab were tested using ModelSim. The modules were synthesised by Synplify Pro, and the FPGA was programmed using Lattice Diamond. The end result was a device that would multiply two hardcoded 8 bit numbers, displaying the 16 bit result in binary on an array of 16 LEDs.
+Using SystemVerilog, the individual elements of an 8 bit (originally 4 bit) hardware multiplier were written for synthesis on to a MachXO2 Pico FPGA. The modules included an 8 bit adder, 17 bit register, and a sequencer that implemented the shift and add multiplication algorithm. The code was mostly tested using Icarus Verilog, and then additional changes in the lab were tested using ModelSim. The modules were synthesised by Synplify Pro, and the FPGA was programmed using Lattice Diamond. The end result was a device that would multiply two hardcoded 8 bit numbers, displaying the 16 bit result in binary on an array of 16 LEDs.
 \end{abstract}
 
 \section{Adder design, simulation and synthesis}
@@ -130,7 +130,7 @@ endmodule
 Figure \ref{fig:addertbw} shows a small section of the output waveform of the adder testbench. At the cursor's position, the values being added together are 50 and 208. In unsigned 8 bit binary, these are expressed as 0011 0010 and 1101 0000 respectively. Adding these two binary values together gives an answer of 1 0000 0010, or in decimal, 2 with a carry of 1, which corresponds to the shown waveform.
 
 \section{Register design, simulation and synthesis}
-An \lstinline{n} bit shift and add multiplier makes use of two \lstinline{n} bit registers, and a carry register. For no reason in particular, all three registers were combined in to one large register in this design. The \lstinline{RESET} instruction is invoked when the multiplier is in its idle state, i.e., waiting to start the calculation. It loads the multiplier in to the bottom 8 bits of the register. \lstinline{ADD} loads the results from the adder in to the top 8 bits of the register. The \lstinline{SHIFT} instruction right shifts the register by one position. \lstinline{SHIFT} and \lstinline{ADD} together carry out both instructions in one go.
+An \lstinline{n} bit shift and add multiplier makes use of two \lstinline{n} bit registers, and a carry register. For no reason in particular, all three registers were combined in to one large register in this design. The \lstinline{RESET} instruction is invoked when the multiplier is in its idle state, i.e. waiting to start the calculation. It loads the multiplier in to the bottom 8 bits of the register. \lstinline{ADD} loads the results from the adder in to the top 8 bits of the register. The \lstinline{SHIFT} instruction right shifts the register by one position. \lstinline{SHIFT} and \lstinline{ADD} together carry out both instructions in one go.
 
 \lstset{caption={Register code (regs.sv)}, label=ls:regs}
 \begin{lstlisting}
@@ -315,14 +315,14 @@ Figure \ref{fig:regstbw} shows the resulting waveform of the testbench. As expec
 
 The sequencer is the module that controls the entire operation, and implements the shift and add multiplication algorithm.
 
+Figure \ref{fig:fseqASM} shows the ASM chart of final version of the state machine. It contains three distinct states, \lstinline{START}; \lstinline{DECREMENT, SHIFT}; and \lstinline{READY}, which are implemented in the module code as \lstinline{stIdle}; \lstinline{stAdd}; and \lstinline{stStop} respectively.
+
 \begin{figure}[H]
     \centering
         \includegraphics[scale=0.65]{finalSequencerASM.eps}
     \caption{ASM chart of the sequencer used in the final multiplier design.}
     \label{fig:fseqASM}
 \end{figure}
-
-Figure \ref{fig:fseqASM} shows the ASM chart of final version of the state machine. It contains three distinct states, \lstinline{START}; \lstinline{DECREMENT, SHIFT}; \lstinline{READY}, which are implemented in the module code as \lstinline{stIdle}; \lstinline{stAdd}; and \lstinline{stStop} respectively.
 
 \lstset{caption={Sequencer module (sequencer.sv)}, label=ls:seq}
 \begin{lstlisting}
@@ -430,7 +430,7 @@ endmodule
     \label{fig:seqRTL}
 \end{figure}
 
-Upon starting the module, or invoking an asynchronous reset (\lstinline{n_reset = 0}), the sequencer should enter the \lstinline{RESET} or \lstinline{stIdle} state, where it instructs the register module to load the multiplier in to its lower 8 bits, and fill the rest with zeros. Whilst in this state, the sequencer also waits for a low \lstinline{START} signal, at which point the state machine will be instructed to go to to the \lstinline{stAdd} state. The code was initially written with the assumption that the button on the FPGA would be an active high input, hence the slightly counter-intuitive name of \lstinline{START}. Once in \lstinline{stAdd}, the \lstinline{DECREMENT} and \lstinline{SHIFT} signals are asserted, instructing the register to carry out a shift instruction, whilst decreasing the value of \lstinline{counter} by 1. If the least significant bit of the register (or $Q_0$ in some implementations), the asynchronous output \lstinline{ADD} is asserted, which instead instructs the register to carry out a shift and add operation in one clock cycle. The sequencer then stays in the \lstinline{stAdd} state until it runs out of bits to work on, i.e. \lstinline{count = 0}, at which point the next state is asserted as \lstinline{stStop}. In \lstinline{stStop}, the sequencer asserts a \lstinline{READY} signal, telling the user that the calculation is complete. It also holds the value of the register, which is output to the user using a line of LEDs. The sequencer waits in this state until the \lstinline{START} signal goes low again. The \lstinline{count} variable is the output of a counter that starts at 7 and reduces by 1 every time the \lstinline{DECREMENT} signal is asserted.
+Upon starting the module, or invoking an asynchronous reset (\lstinline{n_reset = 0}), the sequencer should enter the \lstinline{RESET} or \lstinline{stIdle} state, where it instructs the register module to load the multiplier in to its lower 8 bits, and fill the rest with zeros. Whilst in this state, the sequencer also waits for a low \lstinline{START} signal, at which point the state machine will be instructed to go to to the \lstinline{stAdd} state. The code was initially written with the assumption that the button on the FPGA would be an active high input, hence the slightly counter-intuitive name of \lstinline{START}. Once in \lstinline{stAdd}, the \lstinline{DECREMENT} and \lstinline{SHIFT} signals are asserted, instructing the register to carry out a shift instruction, whilst decreasing the value of \lstinline{count} by 1. If the least significant bit of the register (or $Q_0$), the asynchronous output \lstinline{ADD} is asserted, which instead instructs the register to carry out a shift and add operation in one clock cycle. The sequencer then stays in the \lstinline{stAdd} state until it runs out of bits to work on, i.e. \lstinline{count = 0}, at which point the next state is asserted as \lstinline{stStop}. In \lstinline{stStop}, the sequencer asserts a \lstinline{READY} signal, telling the user that the calculation is complete. It also holds the value of the register, which is output to the user using a line of LEDs. The sequencer waits in this state until the \lstinline{START} signal goes low again. The \lstinline{count} variable is the output of a counter that starts at 7 and reduces by 1 every time the \lstinline{DECREMENT} signal is asserted.
 
 \lstset{caption={Sequencer testbench (sequencer\_tb.sv)}, label=ls:seqtb}
 \begin{lstlisting}
@@ -541,7 +541,7 @@ endmodule
     \label{fig:seqtbw}
 \end{figure}
 
-The sequencer of the testbench (listing \ref{ls:seqtb}) goes through each state of the sequencer and makes sure that the appropriate output signals are asserted. It does this by modifying the input signals and checking to see that the sequencer goes in to the correct state by checking the output signals. Input signals are also modified such that the conditional outputs get asserted, for example, by setting \lstinline{register[0] = 1} in line 66, in which case the ADD output signal should be asserted. The \lstinline{START} signal gets toggled at some points throughout the test to make sure that the sequencer does not react to it unless it's in the \lstinline{stIdle} or \lstinline{stStop} state. Figure \ref{fig:seqtbw} shows how the state machine reacts to various inputs, and also shows the states of the machine. Here, state 000 is \lstinline{stIdle}, state 001 is \lstinline{stAdd}, and state 011 is \lstinline{stStop}. State 010 is not shown, since it was not used in the final code.
+The testbench of the sequencer (listing \ref{ls:seqtb}) goes through each state of the sequencer and makes sure that the appropriate output signals are asserted. It does this by modifying the input signals and checking to see that the sequencer goes in to the correct state by checking the output signals. Input signals are also modified such that the conditional outputs get asserted, for example, by setting \lstinline{register[0] = 1} in line 66, in which case the ADD output signal should be asserted. The \lstinline{START} signal gets toggled at some points throughout the test to make sure that the sequencer does not react to it unless it's in the \lstinline{stIdle} or \lstinline{stStop} state. Figure \ref{fig:seqtbw} shows how the state machine reacts to various inputs, and also shows the states of the machine. Here, state 000 is \lstinline{stIdle}, state 001 is \lstinline{stAdd}, and state 011 is \lstinline{stStop}. State 010 is not shown, since it was not used in the final code.
 
 \section{Multiplier design, simulation and synthesis}
 
@@ -613,7 +613,7 @@ endmodule
     \label{fig:mulRTL}
 \end{figure}
 
-The code in listing \ref{ls:mul} is fundamentally unchanged from the model code provided~\cite{multipliercode}, except for some naming changes. \lstinline{M} and \lstinline{Q} were changed to \lstinline{multiplicand} and \lstinline{multiplier} respectively, to prevent confusion. The specification required the working values in the ``AQ'' register to be shown. Since in this case, the registers were implemented as a single large register, with C, A and Q all in one, the \lstinline{AQ} assignment was added in line 34.
+The code in listing \ref{ls:mul} is fundamentally unchanged from the model code provided~\cite{multipliercode}, except for some naming changes. \lstinline{M} and \lstinline{Q} were changed to \lstinline{multiplicand} and \lstinline{multiplier} respectively to prevent confusion. The specification required the working values in the ``AQ'' register to be shown. Since in this case, the registers were implemented as a single large register, with C, A and Q all in one, the \lstinline{AQ} assignment was added in line 34.
 
 The \lstinline{slowClock} module is identical to the model one provided~\cite{slockcode}, except with some variables renamed again. Its job is to divide the FPGA's internal \SI{3.33}{\mega\hertz} clock down to a more managable rate, so that the calculation steps of the multiplier are actually visible to humans. Although, when simulating, the hardware clock was not used. Instead, the block starting at line 27 was used to generate the clock signal, and the instance of \lstinline{slowClock} was commented out. This is because the simulator doesn't understand what to do with a hardware clock, and since the simulation will not be analised in realtime anyway, the slow clock generator is not necessary.
 
@@ -677,7 +677,7 @@ endmodule
     \label{fig:multbw}
 \end{figure}
 
-The multiplier testbench (listing \ref{ls:multb}) simply simulates the end user operation of the device. It is initially reset, and then the START signal is set low to start the calculation. As shown in listing\ref{ls:mul} and figure \ref{fig:multbw}, the input being tested is $203x19$. The \lstinline{AQ} register is visible at at the bottom of the waveform, and shows that when the multiplier is done (\lstinline{READY} is high), the answer is $3857$, which is correct. The sequence gets tested again to make sure that the multiplier goes back to the beginning, ready to calculate again.
+The multiplier testbench (listing \ref{ls:multb}) simply simulates the end user operation of the device. It is initially reset, and then the START signal is set low to start the calculation. As shown in listing \ref{ls:mul} and figure \ref{fig:multbw}, the input being tested is $203\times19$. The \lstinline{AQ} register is visible at at the bottom of the waveform, and shows that when the multiplier is done (\lstinline{READY} is high), the answer is $3857$, which is correct. The sequence gets tested again to make sure that the multiplier goes back to the beginning, ready to calculate again.
 
 \section{Extensions}
 
